@@ -21,6 +21,18 @@ const typeDefs = gql`
     createUser(userName: String!, email: String!, password: String!): User
     createAdmin(email: String!, password: String!): Admin
   }
+
+ type Mutation {
+  loginUser(email: String!, password: String!): AuthPayload!
+  loginAdmin(email: String!, password: String!): AuthPayload!
+}
+
+type AuthPayload {
+  token: String!
+  user: User
+  admin: Admin
+}
+
 `;
 
 module.exports = typeDefs;

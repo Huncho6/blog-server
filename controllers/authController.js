@@ -6,15 +6,8 @@ const { sendEmail } = require("../emailService");
 const crypto = require("crypto");
 const { Op } = require("sequelize");
 require("dotenv").config();
+const { generateUserToken, generateAdminToken } = require('../authservice/authService'); 
 
-// Helper function to generate JWT for admin
-const generateAdminToken = (admin) => {
-  return jwt.sign(
-    { id: admin.id, role: "admin" }, // Payload
-    process.env.JWT_SECRET, // Secret key
-    { expiresIn: "1h" } // Token expiration
-  );
-};
 
 exports.createAdminAccount = async (req, res) => {
   const { userName, email, password } = req.body;
@@ -140,17 +133,6 @@ exports.resetAdminPassword = async (req, res) => {
     }
 };
 
-
-
-
-// Helper function to generate JWT for user
-const generateUserToken = (user) => {
-  return jwt.sign(
-    { id: user.id, role: "user" }, // Payload
-    process.env.JWT_SECRET, // Secret key
-    { expiresIn: "1h" } // Token expiration
-  );
-};
 
 exports.createUserAccount = async (req, res) => {
   const { userName, email, password } = req.body;
