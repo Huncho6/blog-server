@@ -1,33 +1,37 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../db");
+// userModel.js
+'use strict';
 
-const User = sequelize.define("User", {
-  userName: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  role: {
-    type: DataTypes.STRING,
-    defaultValue: "user",
-  },
-  passwordResetToken: {
-    type: DataTypes.STRING, // Use DataTypes instead of Sequelize
-    allowNull: true,
-  },
-  passwordResetExpires: {
-    type: DataTypes.DATE,
-    allowNull: true,
-  },
-});
+const { DataTypes } = require('sequelize');
 
-module.exports = User;
+module.exports = (sequelize) => {
+  const User = sequelize.define("User", {
+    userName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    role: {
+      type: DataTypes.STRING,
+      defaultValue: "user",
+    },
+    passwordResetToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    passwordResetExpires: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+  });
+
+  return User;
+};

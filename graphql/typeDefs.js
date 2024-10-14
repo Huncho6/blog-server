@@ -5,34 +5,65 @@ const typeDefs = gql`
     id: ID!
     userName: String!
     email: String!
+    password: String!
+    role: String
+    passwordResetToken: String
+    passwordResetExpires: String
   }
 
   type Admin {
     id: ID!
+    userName: String
     email: String!
+    password: String!
+    role: String
+    passwordResetToken: String
+    passwordResetExpires: String
   }
 
+  type News {
+    id: ID!
+    newstitle: String!
+    poster: String!
+    description: String!
+    video: String
+    createdAt: String
+    updatedAt: String
+  }
+
+  type AuthPayload {
+    token: String!
+    user: User
+    admin: Admin
+  }
+
+  # Queries
   type Query {
-    users: [User]
-    admins: [Admin]
+    getAllUsers: [User]
+    getAllAdmins: [Admin]
+    getUserById(id: ID!): User
+    updateUser(id: ID!) : User
+    deleteUser(id: ID!): User
+    getNews: [News]
+    getAdminById(id: ID!): Admin
+    updateAdmin(id: ID!) : Admin
+     deleteAdmin(id: ID!): Admin
   }
 
+  # Mutations
   type Mutation {
     createUser(userName: String!, email: String!, password: String!): User
-    createAdmin(email: String!, password: String!): Admin
+    updateUser(id: ID!, userName: String, email: String, password: String, role: String): User
+    deleteUser(id: ID!): Boolean
+    createAdmin(userName: String!, email: String!, password: String!): Admin 
+    createNews(newstitle: String!, poster: String!, description: String!, video: String): News
+    loginUser(email: String!, password: String!): AuthPayload!
+    loginAdmin(email: String!, password: String!): AuthPayload!
+    forgotUserPassword(email: String!): Boolean
+    resetUserPassword(newPassword: String!, token: String!): Boolean
+    forgotAdminPassword(email: String!): Boolean
+    resetAdminPassword(newPassword: String!, token: String!): Boolean
   }
-
- type Mutation {
-  loginUser(email: String!, password: String!): AuthPayload!
-  loginAdmin(email: String!, password: String!): AuthPayload!
-}
-
-type AuthPayload {
-  token: String!
-  user: User
-  admin: Admin
-}
-
 `;
 
 module.exports = typeDefs;
