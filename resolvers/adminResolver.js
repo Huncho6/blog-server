@@ -18,6 +18,8 @@ const adminResolvers = {
         throw new Error(error.message);
       }
     },
+  },
+  Mutation: {
     updateAdmin: async (_, { id, email, password, userName }) => {
       try {
         const admin = await Admin.findByPk(id);

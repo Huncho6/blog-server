@@ -1,15 +1,7 @@
-const News = require("../models/newsModel");
+// newsResolvers.js
+const News = require("../models/newsModel")
 
 const newsResolvers = {
-  Mutation: {
-    createNews: async (_, { title, content }) => {
-      try {
-        const news = await News.create({ title, content });
-        return news;
-      } catch (error) {
-        throw new Error(error.message);
-      }
-    },
   Query: {
     getAllNews: async () => {
       try {
@@ -17,7 +9,6 @@ const newsResolvers = {
       } catch (error) {
         throw new Error(error.message);
       }
-    },
     },
     getNewsById: async (_, { id }) => {
       try {
@@ -28,20 +19,28 @@ const newsResolvers = {
         throw new Error(error.message);
       }
     },
-    updateNews: async (_, { id, title, content }) => {
+  },
+  Mutation: {
+    createNews: async (_, { newstitle, description, poster, video }) => {
       try {
-        const news = await News.findByPk(id);
-        if (!news) {
-          throw new Error("News not found");
-        }
-        await news.update({ title, content });
+        const news = await News.create({ newstitle, description, poster, video });
         return news;
       } catch (error) {
         throw new Error(error.message);
       }
     },
-
-    // Delete a news
+    updateNews: async (_, { id, newstitle, description }) => {
+      try {
+        const news = await News.findByPk(id);
+        if (!news) {
+          throw new Error("News not found");
+        }
+        await news.update({ newstitle, description });
+        return news;
+      } catch (error) {
+        throw new Error(error.message);
+      }
+    },
     deleteNews: async (_, { id }) => {
       try {
         const news = await News.findByPk(id);

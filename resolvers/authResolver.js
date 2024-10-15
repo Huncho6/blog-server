@@ -1,35 +1,52 @@
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-const { User, Admin } = require("../models");
-const { generateUserToken, generateAdminToken } = require("../utils/authService");
+const Admin = require("../models/adminModel");
+const User = require("../models/userModel");
+const {
+  generateUserToken,
+  generateAdminToken,
+} = require("../utils/authService");
 const { sendEmail } = require("../utils/emailService");
 const { Op } = require("sequelize");
 
 const authResolvers = {
-
+  Query: {
+    healthCheck: () => "Server is running!",
+  },
   Mutation: {
     createAdmin: async (_, { userName, email, password }) => {
       try {
         const existingAdmin = await Admin.findOne({ where: { email } });
-        const existingAdminByUsername = await Admin.findOne({ where: { userName } });
-    
+        const existingAdminByUsername = await Admin.findOne({
+          where: { userName },
+        }); 
+
         if (existingAdmin || existingAdminByUsername) {
           throw new Error("Email or username is already taken");
         }
-    
+
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newAdmin = await Admin.create({ userName, email, password: hashedPassword });
-    
-        await sendEmail(email, "Account Created Successfully", `Hi ${userName}, your admin account has been successfully created.`);
+        const newAdmin = await Admin.create({
+          userName,
+          email,
+          password: hashedPassword,
+          role: "admin",
+        });
+
+        await sendEmail(
+          email,
+          "Account Created Successfully",
+          `Hi ${userName}, your admin account has been successfully created.`
+        );
         const token = generateAdminToken(newAdmin);
-    
+
         return { token, admin: newAdmin };
       } catch (error) {
         console.error("Error creating admin:", error);
         throw new Error("Failed to create admin");
       }
     },
-    
+
     loginAdmin: async (_, { email, password }) => {
       const admin = await Admin.findOne({ where: { email } });
       if (!admin) {
@@ -50,19 +67,22 @@ const authResolvers = {
       if (!admin) {
         throw new Error("Email not found");
       }
-
-      const token = crypto.randomBytes(20).toString("hex");
+    
+      const token = crypto.randomBytes(3).toString("hex");
       admin.passwordResetToken = token;
       admin.passwordResetExpires = Date.now() + 3600000;
       await admin.save();
-
+    
       const subject = "Password Reset";
       const text = `This is your password reset token: ${token}`;
       await sendEmail(email, subject, text);
-
-      return "Password reset token sent to email";
+    
+      return {
+        success: true,
+        message: "Password reset token has been sent to your email",
+      }; // Return a Boolean indicating success
     },
-
+    
     resetAdminPassword: async (_, { token, newPassword }) => {
       const admin = await Admin.findOne({
         where: {
@@ -70,32 +90,47 @@ const authResolvers = {
           passwordResetExpires: { [Op.gt]: Date.now() },
         },
       });
-
+    
       if (!admin) {
         throw new Error("Token is invalid or has expired");
       }
-
+    
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       admin.password = hashedPassword;
       admin.passwordResetToken = null;
       admin.passwordResetExpires = null;
       await admin.save();
-
-      return "Password has been reset successfully";
+    
+      return {
+        success: true,
+        message: "Password has been reset successfully",
+      }; // Return a success message
     },
+    
 
     createUser: async (_, { userName, email, password }) => {
       const existingUser = await User.findOne({ where: { email } });
-      const existingUserByUsername = await User.findOne({ where: { userName } });
+      const existingUserByUsername = await User.findOne({
+        where: { userName },
+      });
 
       if (existingUser || existingUserByUsername) {
         throw new Error("Email or username is already taken");
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = await User.create({ userName, email, password: hashedPassword });
+      const newUser = await User.create({
+        userName,
+        email,
+        password: hashedPassword,
+        role: "user",
+      });
 
-      await sendEmail(email, "Account Created Successfully", `Hi ${userName}, your account has been successfully created.`);
+      await sendEmail(
+        email,
+        "Account Created Successfully",
+        `Hi ${userName}, your account has been successfully created.`
+      );
       const token = generateUserToken(newUser);
 
       return { token, user: newUser };
@@ -122,7 +157,7 @@ const authResolvers = {
         throw new Error("Email not found");
       }
 
-      const token = crypto.randomBytes(20).toString("hex");
+      const token = crypto.randomBytes(3).toString("hex");
       user.passwordResetToken = token;
       user.passwordResetExpires = Date.now() + 3600000;
       await user.save();
@@ -131,7 +166,10 @@ const authResolvers = {
       const text = `This is your password reset token: ${token}`;
       await sendEmail(email, subject, text);
 
-      return "Password reset token sent to email";
+      return {
+        success: true,
+        message: "Password reset token has been sent to your email",
+      };
     },
 
     resetUserPassword: async (_, { token, newPassword }) => {
@@ -152,7 +190,10 @@ const authResolvers = {
       user.passwordResetExpires = null;
       await user.save();
 
-      return "Password has been reset successfully";
+      return {
+        success: true,
+        message: "password has been reset successfully",
+      };
     },
   },
 };

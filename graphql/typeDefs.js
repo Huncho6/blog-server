@@ -9,26 +9,30 @@ const typeDefs = gql`
     role: String
     passwordResetToken: String
     passwordResetExpires: String
+    createdAt: String!
+    updatedAt: String!
   }
 
   type Admin {
     id: ID!
-    userName: String
+    userName: String!
     email: String!
     password: String!
-    role: String
+    role: String!
     passwordResetToken: String
     passwordResetExpires: String
+    createdAt: String!
+    updatedAt: String!
   }
 
   type News {
     id: ID!
     newstitle: String!
-    poster: String!
     description: String!
+    poster: String!
     video: String
-    createdAt: String
-    updatedAt: String
+    createdAt: String!
+    updatedAt: String!
   }
 
   type AuthPayload {
@@ -37,32 +41,39 @@ const typeDefs = gql`
     admin: Admin
   }
 
+type MutationResponse {
+  success: Boolean!
+  message: String!
+}
+
   # Queries
   type Query {
+    healthCheck: String
     getAllUsers: [User]
     getAllAdmins: [Admin]
     getUserById(id: ID!): User
-    updateUser(id: ID!) : User
-    deleteUser(id: ID!): User
-    getNews: [News]
+    getAllNews: [News]          # Updated to match the resolver
+    getNewsById(id: ID!): News   # Updated to match the resolver
     getAdminById(id: ID!): Admin
-    updateAdmin(id: ID!) : Admin
-     deleteAdmin(id: ID!): Admin
   }
 
   # Mutations
   type Mutation {
-    createUser(userName: String!, email: String!, password: String!): User
+    createUser(userName: String!, email: String!, password: String!): AuthPayload
     updateUser(id: ID!, userName: String, email: String, password: String, role: String): User
     deleteUser(id: ID!): Boolean
-    createAdmin(userName: String!, email: String!, password: String!): Admin 
-    createNews(newstitle: String!, poster: String!, description: String!, video: String): News
+    createAdmin(userName: String!, email: String!, password: String!): AuthPayload
+    updateAdmin(id: ID!, email: String, password: String, userName: String): Admin
+    deleteAdmin(id: ID!): Boolean
+    createNews(newstitle: String!, description: String!, poster: String!, video: String): News
+    updateNews(id: ID!, newstitle: String, description: String): News
+    deleteNews(id: ID!): Boolean   # Added deleteNews mutation
     loginUser(email: String!, password: String!): AuthPayload!
     loginAdmin(email: String!, password: String!): AuthPayload!
-    forgotUserPassword(email: String!): Boolean
-    resetUserPassword(newPassword: String!, token: String!): Boolean
-    forgotAdminPassword(email: String!): Boolean
-    resetAdminPassword(newPassword: String!, token: String!): Boolean
+    forgotUserPassword(email: String!): MutationResponse
+    resetUserPassword(newPassword: String!, token: String!): MutationResponse
+    forgotAdminPassword(email: String!): MutationResponse
+    resetAdminPassword(newPassword: String!, token: String!): MutationResponse
   }
 `;
 

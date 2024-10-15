@@ -18,6 +18,8 @@ const userResolvers = {
         throw new Error(error.message);
       }
     },
+  },
+  Mutation: {
     updateUser: async (_, { id, email, password, userName }) => {
       try {
         const user = await User.findByPk(id);

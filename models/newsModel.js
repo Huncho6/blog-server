@@ -1,30 +1,31 @@
 // newsModel.js
-'use strict';
+const { DataTypes } = require("sequelize");
+const sequelize = require("../db"); // Import the sequelize instance
 
-const { DataTypes } = require('sequelize');
-
-module.exports = (sequelize) => {
-  const News = sequelize.define('News', {
+const News = sequelize.define(
+  "News",
+  {
     newstitle: {
       type: DataTypes.STRING,
-      allowNull: false
-    },
-    poster: {
-      type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: false,
+    },
+    poster: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     video: {
       type: DataTypes.STRING,
-      allowNull: true
-    }
-  }, {
-    tableName: 'news',
-    timestamps: true 
-  });
+      allowNull: true,
+    },
+  },
+  {
+    tableName: "news",
+    timestamps: true,
+  }
+);
 
-  return News;
-};
+module.exports = News;

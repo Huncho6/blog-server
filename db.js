@@ -8,10 +8,11 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: "mysql",
-    logging: false, 
+    logging: false,
   }
 );
 
+// Test the database connection
 sequelize
   .authenticate()
   .then(() => {
@@ -21,4 +22,4 @@ sequelize
     console.error("Unable to connect to the database:", err);
   });
 
-module.exports = sequelize;
+module.exports = sequelize; // Ensure you are only exporting sequelize once

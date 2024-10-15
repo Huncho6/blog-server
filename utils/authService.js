@@ -1,4 +1,4 @@
-// authService.js (or the file where you defined the token functions)
+const jwt = require('jsonwebtoken'); // Import jwt
 
 const generateAdminToken = (admin) => {
     return jwt.sign(
@@ -6,19 +6,18 @@ const generateAdminToken = (admin) => {
       process.env.JWT_SECRET, 
       { expiresIn: "1h" }
     );
-  };
-  
-  const generateUserToken = (user) => {
+};
+
+const generateUserToken = (user) => {
     return jwt.sign(
       { id: user.id, role: "user" }, 
       process.env.JWT_SECRET, 
       { expiresIn: "1h" }
     );
-  };
-  
-  // Export the functions
-  module.exports = {
+};
+
+// Export the functions
+module.exports = {
     generateAdminToken,
     generateUserToken,
-  };
-  
+};
