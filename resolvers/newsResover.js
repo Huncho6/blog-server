@@ -1,5 +1,5 @@
-// newsResolvers.js
-const News = require("../models/newsModel")
+const { isAdmin } = require("../middlewares/authMiddleware");
+const News = require("../models/newsModel");
 
 const newsResolvers = {
   Query: {
@@ -21,15 +21,15 @@ const newsResolvers = {
     },
   },
   Mutation: {
-    createNews: async (_, { newstitle, description, poster, video }) => {
+    createNews: isAdmin(async (_, { newstitle, description, poster, video }) => {
       try {
         const news = await News.create({ newstitle, description, poster, video });
         return news;
       } catch (error) {
         throw new Error(error.message);
       }
-    },
-    updateNews: async (_, { id, newstitle, description }) => {
+    }),
+    updateNews: isAdmin(async (_, { id, newstitle, description }) => {
       try {
         const news = await News.findByPk(id);
         if (!news) {
@@ -40,19 +40,19 @@ const newsResolvers = {
       } catch (error) {
         throw new Error(error.message);
       }
-    },
-    deleteNews: async (_, { id }) => {
+    }),
+    deleteNews: isAdmin(async (_, { id }) => {
       try {
         const news = await News.findByPk(id);
         if (!news) {
           throw new Error("News not found");
         }
         await news.destroy();
-        return true; // Return true to indicate success
+        return true;
       } catch (error) {
         throw new Error(error.message);
       }
-    },
+    }),
   },
 };
 
